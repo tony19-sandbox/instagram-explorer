@@ -11,7 +11,7 @@
       }
     </style>
     <a class="login"
-       href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[redirectUri]]&response_type=token&scope=public_content">
+       href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[_redirectUri]]&response_type=token&scope=public_content">
       Login
     </a>
 
@@ -51,7 +51,7 @@
         /**
          * Redirect URI for post-login action
          */
-        redirectUri: {
+        _redirectUri: {
           type: String,
           value: window.location.origin + '/auth'
         },
