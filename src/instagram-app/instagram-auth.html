@@ -1,10 +1,29 @@
+<link rel="import" href="../../bower_components/x-user-dropdown/x-user-dropdown.html">
+
 <dom-module id="instagram-auth">
   <template>
-    <a hidden$="[[accessToken]]"
+    <style>
+      :host([authorized]) .login {
+        display: none;
+      }
+      :host(:not([authorized])) x-user-dropdown {
+        display: none;
+      }
+    </style>
+    <a class="login"
        href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[redirectUri]]&response_type=token&scope=public_content">
-      Login to Instagram
+      Login
     </a>
-    <a hidden$="[[!accessToken]]" href="#" on-tap="_logout">Logout</a>
+
+    <x-user-dropdown on-x-action="_logout"
+                     src="[[userInfoResp.data.profile_picture]]"
+                     name="[[_getName(userInfoResp.data)]]"></x-user-dropdown>
+    <byutv-jsonp id="userInfoAjax"
+                 url="https://api.instagram.com/v1/users/self"
+                 params$='{"access_token": "[[accessToken]]"}'
+                 last-response="{{userInfoResp}}"
+                 on-error="_onError">
+    </byutv-jsonp>
   </template>
   <script>
     Polymer({
@@ -25,7 +44,8 @@
         accessToken: {
           type: String,
           value: () => localStorage.getItem('token'),
-          notify: true
+          notify: true,
+          observer: '_accessTokenChanged'
         },
 
         /**
@@ -42,6 +62,15 @@
         route: {
           type: Object,
           observer: '_routeChanged'
+        },
+
+        /**
+         * Whether the user is logged in and authorized
+         */
+        authorized: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true
         }
       },
 
@@ -55,6 +84,18 @@
         this.accessToken = null;
         e.preventDefault();
         return false;
+      },
+
+      /**
+       * Handles changes to the access token
+       * @param accessToken
+       * @private
+       */
+      _accessTokenChanged: function(accessToken) {
+        if (accessToken) {
+          this.$.userInfoAjax.generateRequest();
+        }
+        this.authorized = !!accessToken;
       },
 
       /**
@@ -75,6 +116,24 @@
           console.warn('no access token');
         }
       },
+
+      /**
+       * Handles JSONP errors
+       * @private
+       */
+      _onError: function() {
+        console.warn('JSONP error', arguments);
+      },
+
+      /**
+       * Gets the user's display name
+       * @param userInfo
+       * @returns the user's name
+       * @private
+       */
+      _getName: function(userInfo) {
+        return userInfo.full_name || userInfo.username;
+      }
     });
   </script>
 </dom-module>
