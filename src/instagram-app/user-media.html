@@ -47,20 +47,8 @@
 
       observers: [
           '_requestUserSearch(user)',
-          '_requestMedia(accessToken, _userId)',
-          '_reset(accessToken)'
+          '_requestMedia(accessToken, _userId)'
       ],
-
-      /**
-       * Clears data if no access token (logged out)
-       * @param accessToken
-       */
-      _reset: function(accessToken) {
-        if (!accessToken) {
-          this._userId = null;
-          this._mediaResp = null;
-        }
-      },
 
       /**
        * Generates AJAX request for user media

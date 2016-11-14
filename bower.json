@@ -7,7 +7,8 @@
     "app-route": "PolymerElements/app-route#^0.9.3",
     "moment-element": "abdonrd/moment-element#^0.4.3",
     "app-storage": "PolymerElements/app-storage#^0.9.7",
-    "juicy-html": "^1.1.0"
+    "juicy-html": "^1.1.0",
+    "app-layout": "PolymerElements/app-layout#^0.10.6"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

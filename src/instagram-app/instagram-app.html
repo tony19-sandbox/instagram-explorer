@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/app-route/app-location.html" async>
 <link rel="import" href="../../bower_components/app-route/app-route.html" async>
+<link rel="import" href="../../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 
 <link rel="import" href="instagram-auth.html">
 <link rel="import" href="user-media.html">
@@ -11,13 +13,29 @@
       :host {
         display: block;
       }
+
+      app-toolbar {
+        background-color: lightblue;
+      }
     </style>
 
     <app-location route="{{_route}}"></app-location>
     <app-route route="[[_route]]" pattern="/:page" route-data="{{_routeData}}"></app-route>
 
-    <instagram-auth route="[[_route]]" access-token="{{_accessToken}}"></instagram-auth>
-    <user-media access-token="[[_accessToken]]" user="[[_user]]"></user-media>
+    <app-header-layout fullbleed has-scrolling-region>
+      <app-header fixed condenses effects="waterfall">
+        <app-toolbar>
+          <div main-title>Instagram Explorer</div>
+          <instagram-auth suffix route="[[_route]]" access-token="{{_accessToken}}"></instagram-auth>
+        </app-toolbar>
+      </app-header>
+      <main>
+        <template is="dom-if" if="[[_accessToken]]" restamp>
+          <user-media access-token="[[_accessToken]]" user="[[_user]]"></user-media>
+        </template>
+      </main>
+    </app-header-layout>
+
   </template>
 
   <script>
