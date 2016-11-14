@@ -1,8 +1,10 @@
 <dom-module id="instagram-auth">
   <template>
-    <a href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[redirectUri]]&response_type=token&scope=public_content">
+    <a hidden$="[[accessToken]]"
+       href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[redirectUri]]&response_type=token&scope=public_content">
       Login to Instagram
     </a>
+    <a hidden$="[[!accessToken]]" href="#" on-tap="_logout">Logout</a>
   </template>
   <script>
     Polymer({
@@ -12,13 +14,17 @@
         /**
          * Instagram API client ID
          */
-        clientId: String,
+        clientId: {
+          type: String,
+          value: 'fef7b1bb238c4043a0e648cad678d2fa'
+        },
 
         /**
          * Instagram OAuth access token
          */
         accessToken: {
           type: String,
+          value: () => localStorage.getItem('token'),
           notify: true
         },
 
@@ -28,9 +34,47 @@
         redirectUri: {
           type: String,
           value: window.location.origin + '/auth'
-        }
-      }
+        },
 
+        /**
+         * Current route location
+         */
+        route: {
+          type: Object,
+          observer: '_routeChanged'
+        }
+      },
+
+      /**
+       * Logs the user out
+       * @param e
+       * @returns {boolean}
+       * @private
+       */
+      _logout: function(e) {
+        this.accessToken = null;
+        e.preventDefault();
+        return false;
+      },
+
+      /**
+       * Handles changes to the current location
+       * @param route
+       * @private
+       */
+      _routeChanged: function(route) {
+        const authActive = route.path === '/auth';
+        if (authActive && /access_token/.test(window.location.hash)) {
+          // hard-code temp token to escape sandboxed mode (token will be manually reset later)
+          this.accessToken = '2954200289.e029fea.8a4325bdda50453f835b31ce5e77b278'; // window.location.hash.split('=')[1];
+          localStorage.setItem('token', this.accessToken);
+
+          // reset to origin to remove token from address bar
+          history.replaceState({}, document.title, '/');
+        } else if (authActive) {
+          console.warn('no access token');
+        }
+      },
     });
   </script>
 </dom-module>

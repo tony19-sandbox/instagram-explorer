@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/byutv-jsonp/byutv-jsonp.html" async>
 <link rel="import" href="../../bower_components/app-route/app-location.html" async>
 <link rel="import" href="../../bower_components/app-route/app-route.html" async>
 
@@ -17,100 +16,23 @@
     <app-location route="{{_route}}"></app-location>
     <app-route route="[[_route]]" pattern="/:page" route-data="{{_routeData}}"></app-route>
 
-    <instagram-auth hidden$="[[_accessToken]]" client-id="[[_clientId]]" access-token="{{_accessToken}}"></instagram-auth>
-    <a hidden$="[[!_accessToken]]" href="#" on-tap="_logout">Logout</a>
-
+    <instagram-auth route="[[_route]]" access-token="{{_accessToken}}"></instagram-auth>
     <user-media access-token="[[_accessToken]]" user="[[_user]]"></user-media>
-
   </template>
 
   <script>
-    (() => {
-      Polymer({
+    Polymer({
+      is: 'instagram-app',
 
-        is: 'instagram-app',
-
-        properties: {
-          /**
-           * Instagram API client ID
-           */
-          _clientId: {
-            type: String,
-            value: 'fef7b1bb238c4043a0e648cad678d2fa'
-          },
-
-          /**
-           * Instagram OAuth access token
-           */
-          _accessToken: {
-            type: String,
-            value: function() {
-              return localStorage.getItem('token');
-            }
-          },
-
-          /**
-           * Instagram username to query
-           */
-          _user: {
-            type: String,
-            value: 'teddysphotos'
-          },
-
-          /**
-           * Current location route
-           */
-          _route: {
-            type: Object,
-            observer: '_routeChanged'
-          }
-        },
-
+      properties: {
         /**
-         * Logs the user out
-         * @param e
-         * @returns {boolean}
-         * @private
+         * Instagram username to query
          */
-        _logout: function(e) {
-          this._accessToken = null;
-          e.preventDefault();
-          return false;
-        },
-
-        /**
-         * Handles changes to the current location
-         * @param route
-         * @private
-         */
-        _routeChanged: function(route) {
-          const authActive = route.path === '/auth';
-          if (authActive && /access_token/.test(window.location.hash)) {
-            //this._accessToken = window.location.hash.split('=')[1];
-            this._accessToken = '2954200289.e029fea.8a4325bdda50453f835b31ce5e77b278';
-            localStorage.setItem('token', this._accessToken);
-            this._gotoOrigin();
-          } else if (authActive) {
-            console.warn('no access token');
-          }
-        },
-
-        /**
-         * Resets URL to origin (useful for removing access token from URL bar)
-         * @private
-         */
-        _gotoOrigin: function() {
-          history.replaceState({}, document.title, '/');
-        },
-
-        /**
-         * Handles errors from JSONP requests
-         * @private
-         */
-        _onError: function() {
-          console.warn('JSONP error', arguments);
+        _user: {
+          type: String,
+          value: 'teddysphotos'
         }
-      });
-    })();
+      }
+    });
   </script>
 </dom-module>
