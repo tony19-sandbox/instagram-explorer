@@ -37,6 +37,16 @@
         flex-direction: column;
       }
 
+      .pic,
+      .pic picture > * {
+        display: inline-block;
+        top: -2em;
+        height: 100%;
+        width: 100%;
+        --iron-image-width: 100%;
+        --iron-image-height: 100%;
+      }
+
       .footer {
         padding: 0.5em;
         background-color: #f6f7f7;
@@ -71,11 +81,11 @@
         </section>
       </section>
 
-      <a target="_blank" href$="[[item.link]]">
+      <a target="_blank" href$="[[item.link]]" class="pic">
         <picture>
-          <source srcset$="[[item.images.low_resolution.url]]" media="(max-width: 320)">
-          <source srcset$="[[item.images.standard_resolution.url]]" media="(min-width: 321)">
-          <iron-image preload fade src="[[item.images.thumbnail.url]]" alt="thumbnail"></iron-image>
+          <source srcset$="[[item.images.low_resolution.url]] 1x" media="(max-width: 320)">
+          <source srcset$="[[item.images.standard_resolution.url]] 1x" media="(min-width: 321)">
+          <iron-image preload fade src="[[item.images.standard_resolution.url]]"></iron-image>
         </picture>
       </a>
 
