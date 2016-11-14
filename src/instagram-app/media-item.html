@@ -1,0 +1,146 @@
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../bower_components/moment-element/moment-element.html">
+<link rel="import" href="../../bower_components/juicy-html/juicy-html.html">
+
+<dom-module id="media-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0.5em;
+      }
+
+      .user-info__profile {
+        border-radius: 50%;
+        --iron-image-width: 2em;
+        --iron-image-height: 2em;
+        --iron-image-placeholder: {
+          background-color: lightgray;
+        }
+      }
+
+      .user-info__username {
+        font-weight: bold;
+      }
+
+      .user-info__name-and-location {
+        margin: 0 0.5em;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .footer {
+        padding: 0.5em;
+        background-color: #f6f7f7;
+        color: #a6aaae;
+      }
+      .footer > span {
+        margin: 0 0.2em;
+      }
+      .footer iron-icon ~ span {
+        margin: 0 0.2em;
+      }
+      .footer iron-icon {
+        --iron-icon-width: 1em;
+        --iron-icon-height: 1em;
+      }
+    </style>
+
+    <figure>
+      <section class="user-info">
+        <iron-image class="user-info__profile"
+                    src="[[item.user.profile_picture]]"
+                    preload
+                    fade
+                    alt="user profile picture">
+        </iron-image>
+        <section class="user-info__name-and-location">
+          <a target="_blank" href$="//instagram.com/[[item.user.username]]"><span class="user-info__username">[[item.user.username]]</span></a>
+          <a target="_blank" href$="[[_locationUrl]]">[[item.location.name]]</a>
+        </section>
+        <section title$="[[_toLocalizedDate(item.caption.created_time)]]">
+          <moment-element datetime="[[item.caption.created_time]]" input-format="X" from="now"></moment-element>
+        </section>
+      </section>
+
+      <a target="_blank" href$="[[item.link]]">
+        <picture>
+          <source srcset$="[[item.images.low_resolution.url]]" media="(max-width: 320)">
+          <source srcset$="[[item.images.standard_resolution.url]]" media="(min-width: 321)">
+          <iron-image preload fade src="[[item.images.thumbnail.url]]" alt="thumbnail"></iron-image>
+        </picture>
+      </a>
+
+      <figcaption>
+        <template is="juicy-html" content$="[[_caption]]"></template>
+      </figcaption>
+
+      <section class="footer">
+        <span title$="likes: [[item.likes.count]]">
+          <iron-icon icon="icons:favorite"></iron-icon>
+          <span>[[_abbrevNumber(item.likes.count)]]</span>
+        </span>
+        <span title$="comments: [[item.comments.count]]">
+          <iron-icon icon="communication:chat-bubble"></iron-icon>
+          <span>[[_abbrevNumber(item.comments.count)]]</span>
+        </span>
+      </section>
+    </figure>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'media-item',
+      properties: {
+        item: Object,
+        _locationUrl: {
+          computed: '_getLocationUrl(item.location.name, item.location.latitude, item.location.longitude)'
+        },
+        _caption: {
+          computed: '_linkify(item.caption.text)'
+        }
+      },
+
+      _toLocalizedDate: function(seconds) {
+        return new Date(seconds * 1000).toLocaleString();
+      },
+
+      _getLocationUrl: function(name, lat, lng) {
+        // If location name contains unicode chars, the new API sometimes has trouble
+        // pinpointing the location (even if given coordinates), so use the old API in that case.
+        var isNonLatin = /[^\u0000-\u00ff]/.test(name);
+        return isNonLatin
+                ? 'https://maps.google.com/maps?z=12&t=m&q=loc:' + lat + '+' + lng
+                : 'https://maps.google.com/maps/place/' + name + '/@' + lat + ',' + lng + ',16z';
+      },
+
+      _linkify: function(text) {
+        if (text) {
+          text = text.replace(/#([^\s]+)/g, '<a target="_blank" href="//instagram.com/explore/tags/$1">#$1</a>');
+          text = text.replace(/@([^\s]+)/g, '<a target="_blank" href="//instagram.com/$1">@$1</a>');
+        }
+        return text;
+      },
+
+      _abbrevNumber: function(number) {
+        const num = Number(number);
+        let abbrev = '';
+        if (num >= 1000000) {
+          abbrev = Math.round(num / 1000000) + 'm';
+        } else if (num >= 1000) {
+          abbrev = Math.round(num / 1000) + 'k';
+        }
+        return abbrev ? abbrev : number;
+      }
+
+    });
+  </script>
+</dom-module>

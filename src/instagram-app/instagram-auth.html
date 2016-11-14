@@ -1,0 +1,36 @@
+<dom-module id="instagram-auth">
+  <template>
+    <a href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[redirectUri]]&response_type=token&scope=public_content">
+      Login to Instagram
+    </a>
+  </template>
+  <script>
+    Polymer({
+      is: 'instagram-auth',
+
+      properties: {
+        /**
+         * Instagram API client ID
+         */
+        clientId: String,
+
+        /**
+         * Instagram OAuth access token
+         */
+        accessToken: {
+          type: String,
+          notify: true
+        },
+
+        /**
+         * Redirect URI for post-login action
+         */
+        redirectUri: {
+          type: String,
+          value: window.location.origin + '/auth'
+        }
+      }
+
+    });
+  </script>
+</dom-module>

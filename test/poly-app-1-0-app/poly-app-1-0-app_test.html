@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>poly-app-1-0-app test</title>
+
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../src/instagram-app/poly-app-1-0-app.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <poly-app-1-0-app></poly-app-1-0-app>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('poly-app-1-0-app', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'poly-app-1-0-app');
+        });
+      });
+    </script>
+  </body>
+</html>

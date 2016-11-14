@@ -1,0 +1,135 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/byutv-jsonp/byutv-jsonp.html">
+<link rel="import" href="./media-item.html">
+
+<dom-module id="user-media">
+  <template>
+    <byutv-jsonp id="userSearchAjax"
+                 url="https://api.instagram.com/v1/users/search"
+                 params$='{"q": "[[user]]", "access_token": "[[accessToken]]"}'
+                 on-response="_onUserSearchResponse"
+                 on-error="_onError">
+    </byutv-jsonp>
+
+    <byutv-jsonp id="mediaAjax"
+                 url="https://api.instagram.com/v1/users/[[_userId]]/media/recent/"
+                 params$='{"access_token": "[[accessToken]]"}'
+                 last-response="{{_mediaResp}}"
+                 on-error="_onError">
+    </byutv-jsonp>
+
+    <template is="dom-if" if="[[!_mediaResp.data.length]]">
+      <div>No media results</div>
+      <div hidden$="[[!_mediaResp.meta.error_message]]">Error: [[mediaResp.meta.error_message]]</div>
+    </template>
+    <template is="dom-repeat" items="[[_mediaResp.data]]">
+      <media-item item="[[item]]"></media-item>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'user-media',
+
+      properties: {
+        /**
+         * Instagram OAuth access token
+         */
+        accessToken: String,
+
+        /**
+         * Instagram username to query
+         */
+        user: String,
+
+        _userId: String,
+        _mediaResp: Object,
+      },
+
+      observers: [
+          '_requestUserSearch(user)',
+          '_requestMedia(accessToken, _userId)',
+          '_reset(accessToken)'
+      ],
+
+      /**
+       * Clears data if no access token (logged out)
+       * @param accessToken
+       */
+      _reset: function(accessToken) {
+        if (!accessToken) {
+          this._userId = null;
+          this._mediaResp = null;
+        }
+      },
+
+      /**
+       * Generates AJAX request for user media
+       * @param accessToken
+       * @param user
+       * @private
+       */
+      _requestMedia: function(accessToken, userId) {
+        if (accessToken && userId) {
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            if (accessToken && userId) {
+              this.$.mediaAjax.generateRequest();
+            }
+          });
+        }
+      },
+
+      /**
+       * Generates AJAX request for user search
+       * @param user
+       * @private
+       */
+      _requestUserSearch: function(user) {
+        if (user) {
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            if (user) {
+              this.$.userSearchAjax.generateRequest();
+            }
+          });
+        }
+      },
+
+      /**
+       * Handles JSONP errors
+       * @private
+       */
+      _onError: function() {
+        console.warn('JSONP error', arguments);
+      },
+
+      /**
+       * Handles user search results
+       * @param e
+       * @private
+       */
+      _onUserSearchResponse: function(e) {
+        const resp = e.detail;
+        if (resp && resp.data) {
+          const name = this.user;
+          let userId;
+          for (const user of resp.data) {
+            if (user.username === name) {
+              userId = user.id;
+              break;
+            }
+          }
+
+          if (!userId) {
+            if (resp.data.length > 0) {
+              // no exact match, so default to first result
+              userId = resp.data[0].id;
+            } else {
+              console.warn('no user id found');
+            }
+          }
+
+          this._userId = userId;
+        }
+      }
+    });
+  </script>
+</dom-module>
