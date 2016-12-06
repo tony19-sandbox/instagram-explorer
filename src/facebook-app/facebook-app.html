@@ -1,14 +1,15 @@
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 
-<link rel="import" href="instagram-auth.html">
-<link rel="import" href="user-media.html">
+<link rel="import" href="facebook-login.html">
+<link rel="import" href="facebook-feed.html">
 
-<dom-module id="instagram-app">
+<dom-module id="facebook-app">
   <template>
     <style>
       :host {
         display: block;
+        background: white;
       }
 
       app-toolbar {
@@ -19,14 +20,12 @@
     <app-header-layout fullbleed has-scrolling-region>
       <app-header fixed condenses effects="waterfall">
         <app-toolbar>
-          <div main-title>Instagram Explorer</div>
-          <instagram-auth suffix route="[[route]]" access-token="{{_accessToken}}"></instagram-auth>
+          <div main-title>Facebook Explorer</div>
+          <facebook-login suffix route="[[_route]]" access-token="{{_accessToken}}"></facebook-login>
         </app-toolbar>
       </app-header>
       <main>
-        <template is="dom-if" if="[[_accessToken]]" restamp>
-          <user-media access-token="[[_accessToken]]" user="[[_user]]"></user-media>
-        </template>
+        <facebook-feed></facebook-feed>
       </main>
     </app-header-layout>
 
@@ -34,11 +33,11 @@
 
   <script>
     Polymer({
-      is: 'instagram-app',
+      is: 'facebook-app',
 
       properties: {
         /**
-         * Instagram username to query
+         * Facebook username to query
          */
         _user: {
           type: String,

@@ -1,0 +1,33 @@
+<link rel="import" href="facebook-auth.html">
+
+<dom-module id="facebook-login">
+  <template>
+    <facebook-auth id="auth" auth="{{_auth}}"></facebook-auth>
+    <a href="#" hidden$="[[_auth]]" on-tap="login">Login</a>
+    <a href="#" hidden$="[[!_auth]]" on-tap="logout">Logout</a>
+  </template>
+  <script>
+    Polymer({
+      is: 'facebook-login',
+
+      properties: {
+        _auth: {
+          type: Object,
+          value: () => null
+        }
+      },
+
+      login: function(e) {
+        this.$.auth.login();
+        e.preventDefault();
+        return false;
+      },
+
+      logout: function(e) {
+        this.$.auth.logout();
+        e.preventDefault();
+        return false;
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
+
+<dom-module id="social-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <app-location route="{{_route}}" use-hash-as-path></app-location>
+    <app-route route="[[_route]]" pattern="/:page" data="{{_routeData}}"></app-route>
+
+    <iron-lazy-pages selected="[[page]]" attr-for-selected="data-name">
+      <template is="iron-lazy-page" data-name="instagram" path="/src/instagram-app/instagram-app.html">
+        <instagram-app route="{{_route}}"></instagram-app>
+      </template>
+      <template is="iron-lazy-page" data-name="facebook" path="/src/facebook-app/facebook-app.html">
+        <facebook-app route="{{_route}}"></facebook-app>
+      </template>
+    </iron-lazy-pages>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'social-app',
+      properties: {
+        _routeData: {
+          type: Object,
+          observer: '_routeDataChanged'
+        },
+        _route: {
+          type: Object,
+          observer: '_routeChanged'
+        }
+      },
+      _routeChanged: function(route) {
+        //console.log('route', route);
+      },
+      _routeDataChanged: function(routeData) {
+        console.log('routeData', routeData);
+        this.page = routeData.page || 'instagram';
+      }
+    });
+  </script>
+</dom-module>

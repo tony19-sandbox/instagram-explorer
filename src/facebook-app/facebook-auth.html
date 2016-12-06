@@ -1,0 +1,74 @@
+<link rel="import" href="facebook-import.html">
+
+<dom-module id="facebook-auth">
+  <script>
+    Polymer({
+      is: 'facebook-auth',
+      properties: {
+        auth: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      ready: function() {
+        this._loginCb = this._fireSignInIfLoggedIn.bind(this);
+      },
+
+      attached: function() {
+        const isLoggedIn = window.FB !== undefined;
+        if (isLoggedIn) {
+          this._fireSignInIfLoggedIn();
+        }
+        document.addEventListener('fb-init', this._loginCb);
+      },
+
+      detached: function() {
+        document.removeEventListener('fb-init', this._loginCb);
+      },
+
+      _fireSignInIfLoggedIn: function() {
+        if (!FB) return;
+
+        FB.getLoginStatus(response => {
+          if (response.status === 'connected') {
+            console.log('Logged in', response);
+            this.auth = response.authResponse;
+            this.fire('sign-in', null, {bubbles: false});
+          }
+        });
+      },
+
+      login: function() {
+        if (!FB) return;
+
+        FB.getLoginStatus(response => {
+          if (response.status === 'connected') {
+            console.log('Logged in', response);
+            this.fire('sign-in', null, {bubbles: false});
+          } else {
+            FB.login(response => {
+              if (response.authResponse) {
+                this.auth = response.authResponse;
+                this.fire('sign-in', null, {bubbles: false});
+              } else {
+                this.auth = null;
+                this.fire('sign-in-error', {messaage: 'User cancelled login or did not fully authorize.'}, {bubbles: false});
+              }
+            });
+          }
+        });
+      },
+
+      logout: function() {
+        if (!FB) return;
+
+        this.auth = null;
+        FB.logout(response => {
+          console.log('Logged out', response);
+          this.fire('sign-out');
+        });
+      }
+    });
+  </script>
+</dom-module>

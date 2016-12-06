@@ -13,7 +13,7 @@
     <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="import" href="/src/instagram-app/instagram-app.html">
+    <link rel="import" href="/src/social-app.html">
   </head>
   <body>
     <style is="custom-style">
@@ -21,7 +21,12 @@
         font-family: 'Open Sans', sans-serif;
         --primary-color: lightblue;
       }
+      body {
+        min-height: 100vh;
+        position: relative;
+        margin: 0;
+      }
     </style>
-    <instagram-app></instagram-app>
+    <social-app></social-app>
   </body>
 </html>

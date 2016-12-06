@@ -1,0 +1,46 @@
+<link rel="import" href="facebook-auth.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="facebook-feed">
+  <template>
+    <facebook-auth auth="{{auth}}"></facebook-auth>
+
+    <iron-ajax id="ajaxFriends"
+               params$='{"access_token":"[[auth.accessToken]]"}'
+               url="https://graph.facebook.com/v2.8/me/friendlists"
+               last-response="{{_friends}}"></iron-ajax>
+
+    <template is="dom-repeat" items="[[_friends.data]]">
+      <div>[[item.last_name]]</div>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'facebook-feed',
+
+      properties: {
+        auth: {
+          type: Object,
+          observer: '_authChanged'
+        }
+      },
+
+      _reset: function() {
+        this._lastName = undefined;
+      },
+
+      _authChanged: function(auth) {
+        console.log('auth', auth, 'FB', FB);
+        if (auth && FB) {
+//          FB.api('/me/feed', response => {
+//            console.log('resp', response);
+//            this._friends = response.data;
+//          });
+          this.$.ajaxFriends.generateRequest();
+        } else {
+          this._reset();
+        }
+      }
+    });
+  </script>
+</dom-module>

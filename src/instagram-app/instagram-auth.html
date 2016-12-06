@@ -1,23 +1,99 @@
-<link rel="import" href="../../bower_components/x-user-dropdown/x-user-dropdown.html">
+<link rel="import" href="../../bower_components/byutv-jsonp/byutv-jsonp.html">
 
 <dom-module id="instagram-auth">
   <template>
     <style>
+      :host {
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+
       :host([authorized]) .login {
         display: none;
       }
-      :host(:not([authorized])) x-user-dropdown {
+
+      :host(:not([authorized])) .user.dropdown {
         display: none;
       }
+
+      .dropdown {
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 49px;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        background-color: #f9f9f9;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        margin-top: 1em;
+        min-width: 140px;
+        z-index: 1;
+      }
+
+      .dropdown-main {
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      .dropdown-content button {
+        font-size: 1rem;
+        height: 2rem;
+        width: 100%;
+        border: none;
+        background: #eee;
+        cursor: pointer;
+      }
+
+      .dropdown-content img {
+        height: 60px;
+        width: 60px;
+      }
+
+      .dropdown img {
+        border-radius: 50%;
+        color: transparent;
+        background: rgba(0,0,0,0.2);
+      }
+
+      .dropdown img.thumbnail {
+        height: 30px;
+        width: 30px;
+      }
+
     </style>
     <a class="login"
        href$="https://api.instagram.com/oauth/authorize/?client_id=[[clientId]]&redirect_uri=[[_redirectUri]]&response_type=token&scope=public_content">
       Login
     </a>
 
-    <x-user-dropdown on-x-action="_logout"
-                     src="[[userInfoResp.data.profile_picture]]"
-                     name="[[_getName(userInfoResp.data)]]"></x-user-dropdown>
+    <div id="userDropdown" class="user dropdown">
+      <img class="thumbnail" src="[[userInfoResp.data.profile_picture]]" alt="user thumbnail">
+      <div class="dropdown-content">
+        <div class="dropdown-main">
+          <img src="[[userInfoResp.data.profile_picture]]" alt="user photo">
+          <div class="name">[[_getName(userInfoResp.data)]]</div>
+        </div>
+        <button on-tap="_logout">Logout</button>
+      </div>
+    </div>
+
     <byutv-jsonp id="userInfoAjax"
                  url="https://api.instagram.com/v1/users/self"
                  params$='{"access_token": "[[accessToken]]"}'
