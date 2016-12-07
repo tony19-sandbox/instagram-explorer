@@ -1,6 +1,10 @@
 <link rel="import" href="facebook-import.html">
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 
 <dom-module id="facebook-auth">
+  <template>
+    <app-localstorage-document key="auth" data="{{auth}}"></app-localstorage-document>
+  </template>
   <script>
     Polymer({
       is: 'facebook-auth',
@@ -45,6 +49,7 @@
         FB.getLoginStatus(response => {
           if (response.status === 'connected') {
             console.log('Logged in', response);
+            this.auth = response.authResponse;
             this.fire('sign-in', null, {bubbles: false});
           } else {
             FB.login(response => {
