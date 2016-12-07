@@ -6,12 +6,11 @@
     <facebook-auth auth="{{auth}}"></facebook-auth>
 
     <iron-ajax id="ajaxFriends"
-               params$='{"access_token":"[[auth.accessToken]]"}'
-               url="https://graph.facebook.com/v2.8/me/friendlists"
+               url="https://graph.facebook.com/v2.8/search"
                last-response="{{_friends}}"></iron-ajax>
 
     <template is="dom-repeat" items="[[_friends.data]]">
-      <div>[[item.last_name]]</div>
+      <div>[[item.name]]</div>
     </template>
   </template>
   <script>
@@ -22,21 +21,29 @@
         auth: {
           type: Object,
           observer: '_authChanged'
-        }
+        },
+        _friends: Array
       },
 
       _reset: function() {
-        this._lastName = undefined;
+        this._friends = null;
       },
 
       _authChanged: function(auth) {
-        console.log('auth', auth, 'FB', FB);
         if (auth && FB) {
-//          FB.api('/me/feed', response => {
-//            console.log('resp', response);
-//            this._friends = response.data;
+          FB.api('/search', {q: 'watermelon', type: 'user', 'access_token': this.auth.accessToken}, response => {
+            console.log('resp', response);
+            if (response.error) {
+              this._friends = null;
+
+            } else {
+              this._friends = response;
+            }
+          });
+//          this.async(() => {
+//            this.$.ajaxFriends.params = {q: 'watermelon', type: 'user', 'access_token': auth.accessToken};
+//            this.$.ajaxFriends.generateRequest();
 //          });
-          this.$.ajaxFriends.generateRequest();
         } else {
           this._reset();
         }
