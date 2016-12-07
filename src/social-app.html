@@ -34,17 +34,9 @@
         _routeData: {
           type: Object,
           observer: '_routeDataChanged'
-        },
-        _route: {
-          type: Object,
-          observer: '_routeChanged'
         }
       },
-      _routeChanged: function(route) {
-        //console.log('route', route);
-      },
       _routeDataChanged: function(routeData) {
-        console.log('routeData', routeData);
         this.page = routeData.page || 'instagram';
       }
     });
